@@ -6,7 +6,7 @@ int main()
 {
   indexing teste;
 
-  teste.print();
+  teste.recovery("apartamento");
 
   return 0;
 }
