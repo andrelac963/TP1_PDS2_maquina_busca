@@ -5,8 +5,8 @@
 #include <set>
 #include <vector>
 #include <string>
-#include <bits/stdc++.h>
 #include <iostream>
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -16,13 +16,13 @@ private:
   map<string, set<string>> index;
 
   void insert(string, string);
+  string normalize(string);
 
 public:
   indexing();
   ~indexing();
 
-  string normalize(string);
-  void print();
+  void recovery(string);
 };
 
 #endif
