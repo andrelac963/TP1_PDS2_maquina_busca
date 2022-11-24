@@ -1,15 +1,12 @@
 #include <iostream>
 #include <string>
+#include "indexing.hpp"
 
 int main()
 {
-  std::string s;
+  indexing teste;
 
-  std::cout << "Insira as palavras que você deseja pesquisar: " << std::endl;
-
-  std::cin >> s;
-
-  std::cout << "A palavra que você digitou foi: " << s << std::endl;
+  teste.print();
 
   return 0;
 }
