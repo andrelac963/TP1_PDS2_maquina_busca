@@ -4,9 +4,13 @@
 
 int main()
 {
+  string pesquisa;
   indexing teste;
+ 
+  cout << "O que deseja buscar?\n ";
+  cin >> pesquisa;
 
-  teste.recovery("apartamento");
+  teste.recovery(pesquisa);
 
   return 0;
 }
