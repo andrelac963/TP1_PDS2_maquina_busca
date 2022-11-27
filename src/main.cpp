@@ -6,19 +6,35 @@ using namespace std;
 
 int main()
 {
-  string search, option;
-  indexing index;
+
+  string option, word, aux;
+  indexing search;
 
   do
   {
-    cout << "O que deseja buscar?\n ";
-    cin >> search;
+    vector<string> query;
 
-    index.recovery(search);
+    cout << "O que deseja buscar?\n ";
+    getline(cin, word);
+
+    for (int i = 0; i <= word.length(); i++)
+    {
+      if (word[i] == ' ' || i == word.length())
+      {
+        query.push_back(aux);
+        aux = "";
+      }
+      else
+      {
+        aux += word[i];
+      }
+    }
+
+    search.recovery(query);
 
     do
     {
-      cout << "\nDeseja fazer outra pesquisa? (s/n)" << endl;
+      cout << "\n\nDeseja fazer outra pesquisa? (s/n)" << endl;
       cin >> option;
 
       if (option != "s" && option != "n")
@@ -33,6 +49,8 @@ int main()
       cout << "\n--------------------------------------------\n"
            << endl;
     }
+
+    cin.ignore();
 
   } while (option == "s");
 

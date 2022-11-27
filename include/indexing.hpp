@@ -22,7 +22,7 @@ public:
   indexing();
   ~indexing();
 
-  void recovery(string);
+  void recovery(vector<string>);
 };
 
 #endif
