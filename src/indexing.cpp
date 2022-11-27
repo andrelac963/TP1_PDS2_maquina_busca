@@ -63,22 +63,32 @@ string indexing::normalize(string word)
   return normalized_word;
 }
 
-void indexing::recovery(string query)
+void indexing::recovery(vector<string> query)
 {
-  string normalized_query = this->normalize(query);
+  set<string> normalized_query;
+  string aux;
 
-  if (this->index.find(normalized_query) != this->index.end())
+  for (int i = 0; i < query.size(); i++)
   {
-    cout << "Palavra encontrada!" << endl;
-    cout << "Arquivos que contém a palavra: " << normalized_query << endl;
-
-    for (auto it = this->index[normalized_query].begin(); it != this->index[normalized_query].end(); it++)
+    aux = this->normalize(query[i]);
+    if (aux != "")
     {
-      cout << *it << endl;
+      normalized_query.insert(aux);
     }
   }
-  else
-  {
-    cout << "Palavra não encontrada!" << endl;
-  }
+
+  // if (this->index.find(normalized_query) != this->index.end())
+  // {
+  //   cout << "Palavra encontrada!" << endl;
+  //   cout << "Arquivos que contém a palavra: " << normalized_query << endl;
+
+  //   for (auto it = this->index[normalized_query].begin(); it != this->index[normalized_query].end(); it++)
+  //   {
+  //     cout << *it << endl;
+  //   }
+  // }
+  // else
+  // {
+  //   cout << "Palavra não encontrada!" << endl;
+  // }
 }
