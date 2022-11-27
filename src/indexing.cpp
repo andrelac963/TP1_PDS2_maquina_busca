@@ -77,18 +77,37 @@ void indexing::recovery(vector<string> query)
     }
   }
 
-  // if (this->index.find(normalized_query) != this->index.end())
-  // {
-  //   cout << "Palavra encontrada!" << endl;
-  //   cout << "Arquivos que contém a palavra: " << normalized_query << endl;
+  map<string, int> relevant_files;
 
-  //   for (auto it = this->index[normalized_query].begin(); it != this->index[normalized_query].end(); it++)
-  //   {
-  //     cout << *it << endl;
-  //   }
-  // }
-  // else
-  // {
-  //   cout << "Palavra não encontrada!" << endl;
-  // }
+  for (auto it = this->index.begin(); it != this->index.end(); it++)
+  {
+    if (normalized_query.find(it->first) != normalized_query.end())
+    {
+      for (auto it2 = it->second.begin(); it2 != it->second.end(); it2++)
+      {
+        relevant_files[*it2]++;
+      }
+    }
+  }
+
+  if (relevant_files.size() == 0)
+  {
+    cout << "\nNenhum documento encontrado!" << endl;
+  }
+  else
+  {
+    set<pair<int, string>> ordered_files;
+
+    for (auto it = relevant_files.begin(); it != relevant_files.end(); it++)
+    {
+      ordered_files.insert(make_pair(it->second, it->first));
+    }
+
+    cout << "\nDocumentos encontrados:" << endl;
+
+    for (auto it = ordered_files.rbegin(); it != ordered_files.rend(); it++)
+    {
+      cout << it->second << " - " << it->first << " ocorrências" << endl;
+    }
+  }
 }
