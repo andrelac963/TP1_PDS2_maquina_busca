@@ -7,6 +7,9 @@
 #include <string>
 #include <iostream>
 #include <bits/stdc++.h>
+#include <cstdio>
+#include <cerrno>
+#include <dirent.h>
 
 using namespace std;
 

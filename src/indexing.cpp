@@ -2,14 +2,36 @@
 
 indexing::indexing()
 {
+  // Listando os arquivos do diretório ./Documentos
+  vector<string> files;
+
+  struct dirent **namelist;
+  int n;
+
+  n = scandir("./documentos", &namelist, NULL, alphasort);
+
+  if (n < 0)
+    perror("scandir");
+  else
+  {
+    while (n > 0)
+    {
+      if (namelist[n - 1]->d_name[0] != '.')
+        files.push_back(namelist[n - 1]->d_name);
+      delete namelist[n - 1];
+      n--;
+    }
+
+    delete namelist;
+  }
+
+  // Inserindo as palavras dos arquivos no índice
   fstream file;
   string word, filename;
-  int i = 1;
 
-  do
+  for (int i = 0; i < files.size(); i++)
   {
-    filename = "d" + to_string(i) + ".txt";
-
+    filename = files[i];
     file.open("./documentos/" + filename);
 
     while (file >> word)
@@ -18,9 +40,7 @@ indexing::indexing()
     }
 
     file.close();
-
-    i++;
-  } while (i <= 3);
+  }
 }
 
 indexing::~indexing()
@@ -42,8 +62,10 @@ string indexing::normalize(string word)
 
   for (int i = 0; i < word.length(); i++)
   {
+    // Verificando se o caractere é maiúsculo
     aux = tolower(word[i]);
 
+    // Verificando se o caractere tem acento
     for (int j = 0; j < comAcentos.length(); j += 2)
     {
       if (word[i] << word[i + 1] == comAcentos[j] << comAcentos[j + 1])
@@ -54,6 +76,7 @@ string indexing::normalize(string word)
       }
     }
 
+    // Verificando se o caractere é um caracter especial
     if (isalpha(aux[0]))
     {
       normalized_word += aux;
@@ -68,6 +91,7 @@ void indexing::recovery(vector<string> query)
   set<string> normalized_query;
   string aux;
 
+  // Normalizando a query
   for (int i = 0; i < query.size(); i++)
   {
     aux = this->normalize(query[i]);
@@ -77,6 +101,7 @@ void indexing::recovery(vector<string> query)
     }
   }
 
+  // Contando a quantidade de vezes que cada arquivo aparece na query
   map<string, int> relevant_files;
 
   for (auto it = this->index.begin(); it != this->index.end(); it++)
@@ -96,6 +121,8 @@ void indexing::recovery(vector<string> query)
   }
   else
   {
+
+    // Ordenando os arquivos por ocorrências na query
     set<pair<int, string>> ordered_files;
 
     for (auto it = relevant_files.begin(); it != relevant_files.end(); it++)
