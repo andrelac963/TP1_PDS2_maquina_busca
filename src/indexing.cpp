@@ -2,55 +2,55 @@
 
 indexing::indexing()
 {
-  // Listando os arquivos do diretório ./Documentos
-  vector<string> files;
-
-  struct dirent **namelist;
-  int n;
-
-  n = scandir("./documentos", &namelist, NULL, alphasort);
-
-  if (n < 0)
-    perror("scandir");
-  else
-  {
-    while (n > 0)
-    {
-      if (namelist[n - 1]->d_name[0] != '.')
-        files.push_back(namelist[n - 1]->d_name);
-      delete namelist[n - 1];
-      n--;
-    }
-
-    delete namelist;
-  }
-
-  // Inserindo as palavras dos arquivos no índice
-  fstream file;
-  string word, filename;
-
-  for (int i = 0; i < files.size(); i++)
-  {
-    filename = files[i];
-    file.open("./documentos/" + filename);
-
-    while (file >> word)
-    {
-      this->insert(word, filename);
-    }
-
-    file.close();
-  }
 }
 
 indexing::~indexing()
 {
 }
 
+set<string> indexing::read_directory(const string &name)
+{
+  DIR *dirp = opendir(name.c_str());
+  struct dirent *dp;
+  set<string> files;
+
+  while ((dp = readdir(dirp)) != NULL)
+  {
+    if (dp->d_name[0] != '.')
+      files.insert(dp->d_name);
+  }
+  closedir(dirp);
+
+  return files;
+}
+
+void indexing::read_files()
+{
+  set<string> files = read_directory("./documentos");
+  fstream file;
+  string word, filename;
+
+  for (auto it = files.begin(); it != files.end(); it++)
+  {
+    filename = *it;
+    file.open("./documentos/" + filename);
+    while (file >> word)
+    {
+      this->insert(word, filename);
+    }
+    file.close();
+  }
+}
+
 void indexing::insert(string word, string filename)
 {
   string normalized_word = this->normalize(word);
   this->index[normalized_word].insert(filename);
+}
+
+map<string, set<string>> indexing::get_index()
+{
+  return this->index;
 }
 
 string indexing::normalize(string word)
