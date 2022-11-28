@@ -24,16 +24,16 @@ set<string> indexing::read_directory(const string &name)
   return files;
 }
 
-void indexing::read_files()
+void indexing::read_files(const string &name)
 {
-  set<string> files = read_directory("./documentos");
+  set<string> files = read_directory(name);
   fstream file;
   string word, filename;
 
   for (auto it = files.begin(); it != files.end(); it++)
   {
     filename = *it;
-    file.open("./documentos/" + filename);
+    file.open(name + filename);
     while (file >> word)
     {
       this->insert(word, filename);
@@ -45,7 +45,8 @@ void indexing::read_files()
 void indexing::insert(string word, string filename)
 {
   string normalized_word = this->normalize(word);
-  this->index[normalized_word].insert(filename);
+  if(normalized_word != "")
+    this->index[normalized_word].insert(filename);
 }
 
 map<string, set<string>> indexing::get_index()

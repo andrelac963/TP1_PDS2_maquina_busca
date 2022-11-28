@@ -21,7 +21,7 @@ public:
   ~indexing();
 
   set<string> read_directory(const string &);
-  void read_files();
+  void read_files(const string &);
 
   void insert(string, string);
   map<string, set<string>> get_index();
