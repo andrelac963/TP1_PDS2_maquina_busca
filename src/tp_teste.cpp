@@ -1,5 +1,5 @@
 #include "../ext/googletest/googletest/include/gtest/gtest.h"
-#include "include/indexing.hpp"
+#include "../include/indexing.hpp"
 
 TEST(IndexingTest, construtor){
   map<string, set<string>> index;
