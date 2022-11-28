@@ -7,8 +7,6 @@
 #include <string>
 #include <iostream>
 #include <bits/stdc++.h>
-#include <cstdio>
-#include <cerrno>
 #include <dirent.h>
 
 using namespace std;
@@ -18,12 +16,17 @@ class indexing
 private:
   map<string, set<string>> index;
 
-  void insert(string, string);
-  string normalize(string);
-
 public:
   indexing();
   ~indexing();
+
+  set<string> read_directory(const string &);
+  void read_files();
+
+  void insert(string, string);
+  map<string, set<string>> get_index();
+
+  string normalize(string);
 
   void recovery(vector<string>);
 };
