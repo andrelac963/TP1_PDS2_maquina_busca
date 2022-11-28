@@ -7,7 +7,7 @@ int main()
 
   string option, word, aux;
   indexing search;
-  search.read_files();
+  search.read_files("./documentos/");
 
   do
   {
