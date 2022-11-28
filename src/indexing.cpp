@@ -137,8 +137,16 @@ vector<pair<string, int>> indexing::recovery(vector<string> query)
 
 void indexing::print_ordered_files(vector<pair<string, int>> ordered_files)
 {
-  for (int i = 0; i < ordered_files.size(); i++)
+  if (ordered_files.size() == 0)
   {
-    cout << ordered_files[i].first << " : " << ordered_files[i].second << " ocorrências" << endl;
+    cout << "\nNenhum arquivo encontrado!" << endl;
+  }
+  else
+  {
+    cout << "\nArquivos encontrados:" << endl;
+    for (int i = 0; i < ordered_files.size(); i++)
+    {
+      cout << ordered_files[i].first << " - " << ordered_files[i].second << " ocorrências" << endl;
+    }
   }
 }
