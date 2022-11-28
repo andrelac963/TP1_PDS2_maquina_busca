@@ -11,6 +11,11 @@ indexing::~indexing()
 set<string> indexing::read_directory(const string &name)
 {
   DIR *dirp = opendir(name.c_str());
+  if (dirp == NULL)
+  {
+    return set<string>();
+  }
+
   struct dirent *dp;
   set<string> files;
 
@@ -45,8 +50,10 @@ void indexing::read_files(const string &name)
 void indexing::insert(string word, string filename)
 {
   string normalized_word = this->normalize(word);
-  if(normalized_word != "")
+  if (normalized_word != "")
+  {
     this->index[normalized_word].insert(filename);
+  }
 }
 
 map<string, set<string>> indexing::get_index()
@@ -63,10 +70,8 @@ string indexing::normalize(string word)
 
   for (int i = 0; i < word.length(); i++)
   {
-    // Verificando se o caractere é maiúsculo
     aux = tolower(word[i]);
 
-    // Verificando se o caractere tem acento
     for (int j = 0; j < comAcentos.length(); j += 2)
     {
       if (word[i] << word[i + 1] == comAcentos[j] << comAcentos[j + 1])
@@ -77,7 +82,6 @@ string indexing::normalize(string word)
       }
     }
 
-    // Verificando se o caractere é um caracter especial
     if (isalpha(aux[0]))
     {
       normalized_word += aux;
@@ -87,12 +91,16 @@ string indexing::normalize(string word)
   return normalized_word;
 }
 
-void indexing::recovery(vector<string> query)
+bool conditional_sort(pair<string, int> &a, pair<string, int> &b)
+{
+  return a.second > b.second;
+}
+
+vector<pair<string, int>> indexing::recovery(vector<string> query)
 {
   set<string> normalized_query;
   string aux;
 
-  // Normalizando a query
   for (int i = 0; i < query.size(); i++)
   {
     aux = this->normalize(query[i]);
@@ -102,7 +110,6 @@ void indexing::recovery(vector<string> query)
     }
   }
 
-  // Contando a quantidade de vezes que cada arquivo aparece na query
   map<string, int> relevant_files;
 
   for (auto it = this->index.begin(); it != this->index.end(); it++)
@@ -116,26 +123,22 @@ void indexing::recovery(vector<string> query)
     }
   }
 
-  if (relevant_files.size() == 0)
+  vector<pair<string, int>> ordered_files;
+
+  for (auto it = relevant_files.begin(); it != relevant_files.end(); it++)
   {
-    cout << "\nNenhum documento encontrado!" << endl;
+    ordered_files.push_back(make_pair(it->first, it->second));
   }
-  else
+
+  sort(ordered_files.begin(), ordered_files.end(), conditional_sort);
+
+  return ordered_files;
+}
+
+void indexing::print_ordered_files(vector<pair<string, int>> ordered_files)
+{
+  for (int i = 0; i < ordered_files.size(); i++)
   {
-
-    // Ordenando os arquivos por ocorrências na query
-    set<pair<int, string>> ordered_files;
-
-    for (auto it = relevant_files.begin(); it != relevant_files.end(); it++)
-    {
-      ordered_files.insert(make_pair(it->second, it->first));
-    }
-
-    cout << "\nDocumentos encontrados:" << endl;
-
-    for (auto it = ordered_files.rbegin(); it != ordered_files.rend(); it++)
-    {
-      cout << it->second << " - " << it->first << " ocorrências" << endl;
-    }
+    cout << ordered_files[i].first << " : " << ordered_files[i].second << " ocorrências" << endl;
   }
 }

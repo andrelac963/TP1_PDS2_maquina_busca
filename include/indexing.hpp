@@ -25,10 +25,10 @@ public:
 
   void insert(string, string);
   map<string, set<string>> get_index();
-
   string normalize(string);
 
-  void recovery(vector<string>);
+  vector<pair<string, int>> recovery(vector<string>);
+  void print_ordered_files(vector<pair<string, int>>);
 };
 
 #endif

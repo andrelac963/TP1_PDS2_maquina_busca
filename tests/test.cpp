@@ -1,7 +1,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 
-#include "indexing.hpp"
+#include "../include/indexing.hpp"
 
 TEST_CASE("Testa Indexing::Indexing()")
 {
@@ -19,6 +19,13 @@ TEST_CASE("Testa Indexing::read_directory()")
   CHECK(files.find("documentos_test") != files.end());
 }
 
+TEST_CASE("Testa Indexing::read_directory() com diretório inexistente")
+{
+  indexing test;
+  set<string> files = test.read_directory("./tests/nao_existe");
+  CHECK(files.size() == 0);
+}
+
 TEST_CASE("Testa Indexing::read_files()")
 {
   indexing test;
@@ -26,7 +33,12 @@ TEST_CASE("Testa Indexing::read_files()")
   CHECK(test.get_index().size() == 3);
 }
 
-
+TEST_CASE("Testa Indexing::read_files() com diretório inexistente")
+{
+  indexing test;
+  test.read_files("./tests/nao_existe/");
+  CHECK(test.get_index().size() == 0);
+}
 
 TEST_CASE("Testa Indexing::Insert()")
 {
@@ -160,3 +172,23 @@ TEST_CASE("Testa Indexing::Normalize() somente espaços")
   string normalized_word = test.normalize(" ");
   CHECK(normalized_word == "");
 }
+
+TEST_CASE("Testa Indexing::Recovery()")
+{
+  indexing test;
+  vector<string> input_recovery = {"teste", "testando"};
+  test.insert("teste", "teste.txt");
+  test.insert("teste", "teste2.txt");
+  test.insert("teste", "teste3.txt");
+  test.insert("testando", "teste.txt");
+  test.insert("testando", "teste3.txt");
+  vector<pair<string, int>> result_recovery = test.recovery(input_recovery);
+  CHECK(result_recovery.size() == 3);
+  CHECK(result_recovery[0].first == "teste.txt");
+  CHECK(result_recovery[0].second == 2);
+  CHECK(result_recovery[1].first == "teste3.txt");
+  CHECK(result_recovery[1].second == 2);
+  CHECK(result_recovery[2].first == "teste2.txt");
+  CHECK(result_recovery[2].second == 1);
+}
+
