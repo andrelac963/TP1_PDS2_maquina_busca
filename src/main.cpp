@@ -1,5 +1,3 @@
-#include <iostream>
-#include <string>
 #include "indexing.hpp"
 
 using namespace std;
@@ -9,6 +7,7 @@ int main()
 
   string option, word, aux;
   indexing search;
+  search.read_files("./documentos/");
 
   do
   {
@@ -30,7 +29,7 @@ int main()
       }
     }
 
-    search.recovery(query);
+    search.print_ordered_files(query);
 
     do
     {

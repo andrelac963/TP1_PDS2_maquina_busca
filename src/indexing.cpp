@@ -2,55 +2,63 @@
 
 indexing::indexing()
 {
-  // Listando os arquivos do diretório ./Documentos
-  vector<string> files;
-
-  struct dirent **namelist;
-  int n;
-
-  n = scandir("./documentos", &namelist, NULL, alphasort);
-
-  if (n < 0)
-    perror("scandir");
-  else
-  {
-    while (n > 0)
-    {
-      if (namelist[n - 1]->d_name[0] != '.')
-        files.push_back(namelist[n - 1]->d_name);
-      delete namelist[n - 1];
-      n--;
-    }
-
-    delete namelist;
-  }
-
-  // Inserindo as palavras dos arquivos no índice
-  fstream file;
-  string word, filename;
-
-  for (int i = 0; i < files.size(); i++)
-  {
-    filename = files[i];
-    file.open("./documentos/" + filename);
-
-    while (file >> word)
-    {
-      this->insert(word, filename);
-    }
-
-    file.close();
-  }
 }
 
 indexing::~indexing()
 {
 }
 
+set<string> indexing::read_directory(const string &name)
+{
+  DIR *dirp = opendir(name.c_str());
+  if (dirp == NULL)
+  {
+    return set<string>();
+  }
+
+  struct dirent *dp;
+  set<string> files;
+
+  while ((dp = readdir(dirp)) != NULL)
+  {
+    if (dp->d_name[0] != '.')
+      files.insert(dp->d_name);
+  }
+  closedir(dirp);
+
+  return files;
+}
+
+void indexing::read_files(const string &name)
+{
+  set<string> files = read_directory(name);
+  fstream file;
+  string word, filename;
+
+  for (auto it = files.begin(); it != files.end(); it++)
+  {
+    filename = *it;
+    file.open(name + filename);
+    while (file >> word)
+    {
+      this->insert(word, filename);
+    }
+    file.close();
+  }
+}
+
 void indexing::insert(string word, string filename)
 {
   string normalized_word = this->normalize(word);
-  this->index[normalized_word].insert(filename);
+  if (normalized_word != "")
+  {
+    this->index[normalized_word].insert(filename);
+  }
+}
+
+map<string, set<string>> indexing::get_index()
+{
+  return this->index;
 }
 
 string indexing::normalize(string word)
@@ -62,10 +70,8 @@ string indexing::normalize(string word)
 
   for (int i = 0; i < word.length(); i++)
   {
-    // Verificando se o caractere é maiúsculo
     aux = tolower(word[i]);
 
-    // Verificando se o caractere tem acento
     for (int j = 0; j < comAcentos.length(); j += 2)
     {
       if (word[i] << word[i + 1] == comAcentos[j] << comAcentos[j + 1])
@@ -76,7 +82,6 @@ string indexing::normalize(string word)
       }
     }
 
-    // Verificando se o caractere é um caracter especial
     if (isalpha(aux[0]))
     {
       normalized_word += aux;
@@ -86,12 +91,16 @@ string indexing::normalize(string word)
   return normalized_word;
 }
 
-void indexing::recovery(vector<string> query)
+bool conditional_sort(pair<string, int> &a, pair<string, int> &b)
+{
+  return a.second > b.second;
+}
+
+vector<pair<string, int>> indexing::recovery(vector<string> query)
 {
   set<string> normalized_query;
   string aux;
 
-  // Normalizando a query
   for (int i = 0; i < query.size(); i++)
   {
     aux = this->normalize(query[i]);
@@ -101,7 +110,6 @@ void indexing::recovery(vector<string> query)
     }
   }
 
-  // Contando a quantidade de vezes que cada arquivo aparece na query
   map<string, int> relevant_files;
 
   for (auto it = this->index.begin(); it != this->index.end(); it++)
@@ -115,26 +123,32 @@ void indexing::recovery(vector<string> query)
     }
   }
 
-  if (relevant_files.size() == 0)
+  vector<pair<string, int>> ordered_files;
+
+  for (auto it = relevant_files.begin(); it != relevant_files.end(); it++)
   {
-    cout << "\nNenhum documento encontrado!" << endl;
+    ordered_files.push_back(make_pair(it->first, it->second));
+  }
+
+  sort(ordered_files.begin(), ordered_files.end(), conditional_sort);
+
+  return ordered_files;
+}
+
+void indexing::print_ordered_files(vector<string> query)
+{
+  vector<pair<string, int>> ordered_files = this->recovery(query);
+
+  if (ordered_files.size() == 0)
+  {
+    cout << "\nNenhum arquivo encontrado!" << endl;
   }
   else
   {
-
-    // Ordenando os arquivos por ocorrências na query
-    set<pair<int, string>> ordered_files;
-
-    for (auto it = relevant_files.begin(); it != relevant_files.end(); it++)
+    cout << "\nArquivos encontrados:" << endl;
+    for (int i = 0; i < ordered_files.size(); i++)
     {
-      ordered_files.insert(make_pair(it->second, it->first));
-    }
-
-    cout << "\nDocumentos encontrados:" << endl;
-
-    for (auto it = ordered_files.rbegin(); it != ordered_files.rend(); it++)
-    {
-      cout << it->second << " - " << it->first << " ocorrências" << endl;
+      cout << ordered_files[i].first << " - " << ordered_files[i].second << " ocorrências" << endl;
     }
   }
 }
