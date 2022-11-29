@@ -28,7 +28,7 @@ public:
   string normalize(string);
 
   vector<pair<string, int>> recovery(vector<string>);
-  void print_ordered_files(vector<pair<string, int>>);
+  void print_ordered_files(vector<string>);
 };
 
 #endif

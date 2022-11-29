@@ -29,7 +29,7 @@ int main()
       }
     }
 
-    search.print_ordered_files(search.recovery(query));
+    search.print_ordered_files(query);
 
     do
     {

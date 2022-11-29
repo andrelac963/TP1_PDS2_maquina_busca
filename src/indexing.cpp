@@ -135,8 +135,10 @@ vector<pair<string, int>> indexing::recovery(vector<string> query)
   return ordered_files;
 }
 
-void indexing::print_ordered_files(vector<pair<string, int>> ordered_files)
+void indexing::print_ordered_files(vector<string> query)
 {
+  vector<pair<string, int>> ordered_files = this->recovery(query);
+
   if (ordered_files.size() == 0)
   {
     cout << "\nNenhum arquivo encontrado!" << endl;
